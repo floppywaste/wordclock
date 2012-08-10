@@ -4,20 +4,20 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../DS1302.c \
 ../display.c \
-../ds13o2.c \
 ../main.c \
 ../uart.c 
 
 OBJS += \
+./DS1302.o \
 ./display.o \
-./ds13o2.o \
 ./main.o \
 ./uart.o 
 
 C_DEPS += \
+./DS1302.d \
 ./display.d \
-./ds13o2.d \
 ./main.d \
 ./uart.d 
 

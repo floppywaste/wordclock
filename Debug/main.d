@@ -1,5 +1,7 @@
-main.d main.o: ../main.c ../display.h ../ds1302.h
+main.d main.o: ../main.c ../display.h ../DS1302.h ../uart.h
 
 ../display.h:
 
-../ds1302.h:
+../DS1302.h:
+
+../uart.h:
