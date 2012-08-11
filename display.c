@@ -1,7 +1,6 @@
 #include <avr/io.h>
+#include "macro.h"
 
-#define SET(port,b) (port) |= (1<<(b))
-#define CLR(port,b) (port) &= ~(1<<(b))
 
 
 void initOutput() {

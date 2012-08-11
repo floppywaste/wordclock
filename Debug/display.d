@@ -1,1 +1,3 @@
-display.d display.o: ../display.c
+display.d display.o: ../display.c ../macro.h
+
+../macro.h:

@@ -82,7 +82,7 @@ sizedummy: wordclock_arduino.elf
 
 avrdudedummy: wordclock_arduino.elf
 	@echo 'Invoking: AVRDude'
-	/usr/bin/avrdude -pm328p -carduino -P/dev/ttyACM1 -V -Uflash:w:wordclock_arduino.hex:a
+	/usr/bin/avrdude -pm328p -carduino -P/dev/ttyACM0 -V -Uflash:w:wordclock_arduino.hex:a
 	@echo 'Finished building: $@'
 	@echo ' '
 
