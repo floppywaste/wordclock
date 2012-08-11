@@ -1,60 +1,28 @@
 #include "DS1302.h"
 #include <avr/io.h>
 #include <util/delay.h>
-
-void shiftOut(uint8_t val) {
-	uint8_t i;
-	DS1302_CLK_0;
-	for (i = 0; i < 8; i++) {
-		if (val & (1 << i))
-			DS1302_IO_1;
-		else
-			DS1302_IO_0;
-		DS1302_CLK_1;
-		_delay_ms(1);
-		DS1302_CLK_0;
-	}
-}
+#include "macro.h"
 
 void _write_out(uint8_t value) {
-	DS1302_IO_DIR_OUT;
+	SET(DDRB, DDB2);
 	for (int i = 0; i < 8; i++) {
-		DS1302_CLK_0;
+		CLR(PORTB, PB1);
 		_delay_ms(1);
-		if (value & 0x01)
-			DS1302_IO_1;
-		else
-			DS1302_IO_0;
+		if (value & 0x01) {
+			SET(PORTB, PB2);
+		} else {
+			CLR(PORTB, PB2);
+		}
 		_delay_ms(1);
-		DS1302_CLK_1;
+		SET(PORTB, PB1);
 		_delay_ms(1);
 		value >>= 1;
-
 	}
-//	DS1302_IO_DIR_OUT;
-//	shiftOut(value);
 }
 
 void init() {
-	DS1302_CLK_DIR_OUT;
-	DS1302_RST_DIR_OUT;
-}
-
-uint8_t _read_in() {
-	uint8_t input_value = 0;
-	uint8_t bit = 0;
-	DS1302_IO_DIR_IN;
-
-	for (int i = 0; i < 8; ++i) {
-		bit = DS1302_IO_IN;
-		input_value |= (bit << i);
-
-		DS1302_CLK_1;
-		_delay_ms(1);
-		DS1302_CLK_0;
-	}
-
-	return input_value;
+	SET(DDRB, DDB0);
+	SET(DDRB, DDB1);
 }
 
 uint8_t _register_bcd_to_dec_(uint8_t reg, uint8_t high_bit) {
@@ -89,20 +57,35 @@ void _register_dec_to_bcd(uint8_t reg, uint8_t value) {
 	_register_dec_to_bcd_(reg, value, 7);
 }
 
+uint8_t __read_in() {
+	uint8_t input_value = 0;
+	CLR(DDRB, DDB2);
+
+	CLR(PORTB, PB1);
+	for (int i = 0; i < 8; ++i) {
+		if (PINB & (1 << PB2))
+			input_value |= (1 << i);
+		SET(PORTB, PB1);
+		_delay_ms(1);
+		CLR(PORTB, PB1);
+	}
+
+	return input_value;
+}
+
 uint8_t read_register(uint8_t reg) {
 	uint8_t cmd_byte = 129; /* 1000 0001 */
 	uint8_t reg_value;
 	cmd_byte |= (reg << 1);
 
-	DS1302_CLK_0;
+	CLR(PORTB, PB1);
+
 	DS1302_RST_1;
-//  digitalWrite(_ce_pin, HIGH);
-
+	SET(PORTB, PB0);
 	_write_out(cmd_byte);
-	reg_value = _read_in();
+	reg_value = __read_in();
 
-	DS1302_RST_0;
-//  digitalWrite(_ce_pin, LOW);
+	CLR(PORTB, PB0);
 
 	return reg_value;
 }
@@ -118,19 +101,6 @@ void write_register(uint8_t reg, uint8_t value) {
 
 	DS1302_RST_0;
 }
-
-//void write_protect(bool enable)
-//{
-//	write_register(WP_REG, (enable << 7));
-//}
-//
-//void DS1302::halt(bool enable)
-//{
-//	uint8_t sec = read_register(SEC_REG);
-//	sec &= ~(1 << 7);
-//	sec |= (enable << 7);
-//	write_register(SEC_REG, sec);
-//}
 
 /*** Get time ***/
 
@@ -170,19 +140,6 @@ uint16_t getYear() {
 	return 2000 + _register_bcd_to_dec(YR_REG);
 }
 
-//Time DS1302::time()
-//{
-//	Time t;
-//	t.sec = seconds();
-//	t.min = minutes();
-//	t.hr = hour();
-//	t.date = date();
-//	t.mon = month();
-//	t.day = day();
-//	t.yr = year();
-//	return t;
-//}
-
 /*** Set time ***/
 
 void seconds(uint8_t sec) {
@@ -214,14 +171,3 @@ void year(uint16_t yr) {
 	yr -= 2000;
 	_register_dec_to_bcd(YR_REG, yr);
 }
-
-//void DS1302::time(Time t)
-//{
-//	seconds(t.sec);
-//	minutes(t.min);
-//	hour(t.hr);
-//	date(t.date);
-//	month(t.mon);
-//	day(t.day);
-//	year(t.yr);
-//}
