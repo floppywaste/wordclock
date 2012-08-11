@@ -28,6 +28,8 @@
 #ifndef DS1302_H_
 #define DS1302_H_
 
+#include "macro.h"
+
 /**
  * Convenience register constants.
  */
@@ -40,17 +42,18 @@
 #define YR_REG   6
 #define WP_REG   7
 
-#define DS1302_RST_1 (PORTB|=PB0)
-#define DS1302_RST_0 (PORTB&=~PB0)
-#define DS1302_CLK_1 (PORTB|=PB1)
-#define DS1302_CLK_0 (PORTB&=~PB1)
-#define DS1302_IO_1 (PORTB|=PB2)
-#define DS1302_IO_0 (PORTB&=~PB2)
-#define DS1302_IO_DIR_OUT (DDRB|=DDB2)
-#define DS1302_IO_DIR_IN (DDRB&=~DDB2)
-#define DS1302_IO_IN (PINB & (1 << PB2))
-#define DS1302_CLK_DIR_OUT (DDRB|=DDB1)
-#define DS1302_RST_DIR_OUT (DDRB|=DDB0)
+#define DS1302_RST_1 SET(PORTB, PB0);
+#define DS1302_RST_0 CLR(PORTB, PB0);
+#define DS1302_CLK_1 SET(PORTB, PB1);
+#define DS1302_CLK_0 CLR(PORTB, PB1);
+#define DS1302_IO_1 SET(PORTB, PB2);
+#define DS1302_IO_0 CLR(PORTB, PB2);
+#define DS1302_IO_DIR_OUT SET(DDRB, DDB2);
+#define DS1302_IO_DIR_IN CLR(DDRB, DDB2);
+#define DS1302_IO_IN_1 (PINB & (1 << PB2))
+#define DS1302_CLK_DIR_OUT SET(DDRB, DDB1)
+#define DS1302_RST_DIR_OUT SET(DDRB, DDB0)
+
 
 #include <stdint.h>
 

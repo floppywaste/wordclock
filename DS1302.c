@@ -6,23 +6,23 @@
 void _write_out(uint8_t value) {
 	SET(DDRB, DDB2);
 	for (int i = 0; i < 8; i++) {
-		CLR(PORTB, PB1);
+		DS1302_CLK_0;
 		_delay_ms(1);
 		if (value & 0x01) {
-			SET(PORTB, PB2);
+			DS1302_IO_1;
 		} else {
-			CLR(PORTB, PB2);
+			DS1302_IO_0;
 		}
 		_delay_ms(1);
-		SET(PORTB, PB1);
+		DS1302_CLK_1;
 		_delay_ms(1);
 		value >>= 1;
 	}
 }
 
 void init() {
-	SET(DDRB, DDB0);
-	SET(DDRB, DDB1);
+	DS1302_CLK_DIR_OUT;
+	DS1302_RST_DIR_OUT;
 }
 
 uint8_t _register_bcd_to_dec_(uint8_t reg, uint8_t high_bit) {
@@ -57,17 +57,20 @@ void _register_dec_to_bcd(uint8_t reg, uint8_t value) {
 	_register_dec_to_bcd_(reg, value, 7);
 }
 
-uint8_t __read_in() {
+uint8_t _read_in() {
 	uint8_t input_value = 0;
-	CLR(DDRB, DDB2);
+	DS1302_IO_DIR_IN
 
-	CLR(PORTB, PB1);
+	DS1302_CLK_0
+	;
 	for (int i = 0; i < 8; ++i) {
-		if (PINB & (1 << PB2))
+		if (DS1302_IO_IN_1)
 			input_value |= (1 << i);
-		SET(PORTB, PB1);
+		DS1302_CLK_1
+		;
 		_delay_ms(1);
-		CLR(PORTB, PB1);
+		DS1302_CLK_0
+		;
 	}
 
 	return input_value;
@@ -78,14 +81,15 @@ uint8_t read_register(uint8_t reg) {
 	uint8_t reg_value;
 	cmd_byte |= (reg << 1);
 
-	CLR(PORTB, PB1);
-
-	DS1302_RST_1;
-	SET(PORTB, PB0);
+	DS1302_CLK_0
+	;
+	DS1302_RST_1
+	;
 	_write_out(cmd_byte);
-	reg_value = __read_in();
+	reg_value = _read_in();
 
-	CLR(PORTB, PB0);
+	DS1302_RST_0
+	;
 
 	return reg_value;
 }
@@ -93,13 +97,16 @@ uint8_t read_register(uint8_t reg) {
 void write_register(uint8_t reg, uint8_t value) {
 	uint8_t cmd_byte = (128 | (reg << 1));
 
-	DS1302_CLK_0;
-	DS1302_RST_1;
+	DS1302_CLK_0
+	;
+	DS1302_RST_1
+	;
 
 	_write_out(cmd_byte);
 	_write_out(value);
 
-	DS1302_RST_0;
+	DS1302_RST_0
+	;
 }
 
 /*** Get time ***/
