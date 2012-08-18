@@ -3,26 +3,26 @@
 #include <util/delay.h>
 #include "macro.h"
 
+void initClock() {
+	DS1302_CLK_DIR_OUT;
+	DS1302_RST_DIR_OUT;
+}
+
 void _write_out(uint8_t value) {
 	SET(DDRB, DDB2);
 	for (int i = 0; i < 8; i++) {
-		DS1302_CLK_0;
+		DS1302_CLK_0
 		_delay_ms(1);
 		if (value & 0x01) {
-			DS1302_IO_1;
+			DS1302_IO_1
 		} else {
-			DS1302_IO_0;
+			DS1302_IO_0
 		}
 		_delay_ms(1);
-		DS1302_CLK_1;
+		DS1302_CLK_1
 		_delay_ms(1);
 		value >>= 1;
 	}
-}
-
-void init() {
-	DS1302_CLK_DIR_OUT;
-	DS1302_RST_DIR_OUT;
 }
 
 uint8_t _register_bcd_to_dec_(uint8_t reg, uint8_t high_bit) {
@@ -60,17 +60,13 @@ void _register_dec_to_bcd(uint8_t reg, uint8_t value) {
 uint8_t _read_in() {
 	uint8_t input_value = 0;
 	DS1302_IO_DIR_IN
-
 	DS1302_CLK_0
-	;
 	for (int i = 0; i < 8; ++i) {
 		if (DS1302_IO_IN_1)
 			input_value |= (1 << i);
 		DS1302_CLK_1
-		;
 		_delay_ms(1);
 		DS1302_CLK_0
-		;
 	}
 
 	return input_value;
@@ -82,14 +78,11 @@ uint8_t read_register(uint8_t reg) {
 	cmd_byte |= (reg << 1);
 
 	DS1302_CLK_0
-	;
 	DS1302_RST_1
-	;
 	_write_out(cmd_byte);
 	reg_value = _read_in();
 
 	DS1302_RST_0
-	;
 
 	return reg_value;
 }
@@ -98,15 +91,20 @@ void write_register(uint8_t reg, uint8_t value) {
 	uint8_t cmd_byte = (128 | (reg << 1));
 
 	DS1302_CLK_0
-	;
 	DS1302_RST_1
-	;
 
 	_write_out(cmd_byte);
 	_write_out(value);
 
 	DS1302_RST_0
-	;
+}
+
+void halt(bool enable)
+{
+  uint8_t sec = read_register(SEC_REG);
+  sec &= ~(1 << 7);
+  sec |= (enable << 7);
+  write_register(SEC_REG, sec);
 }
 
 /*** Get time ***/
@@ -177,4 +175,18 @@ void day(uint8_t day) {
 void year(uint16_t yr) {
 	yr -= 2000;
 	_register_dec_to_bcd(YR_REG, yr);
+}
+
+void addMinutes(uint8_t mins) {
+	uint8_t newMinutes = getMinutes() + mins;
+	if (newMinutes > 59)
+		newMinutes -= 60;
+	minutes(newMinutes);
+}
+
+void addHours(uint8_t hours) {
+	uint8_t newHours = getHour() + hours;
+	if (newHours > 23)
+		newHours -= 24;
+	hour(newHours);
 }

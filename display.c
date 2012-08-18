@@ -1,30 +1,28 @@
 #include <avr/io.h>
 #include "macro.h"
-
-
+#include "display.h"
 
 void initOutput() {
-	DDRD = (1 << DDD3) | (1 << DDD4) | (1 << DDD5);
+	SHIFTREG_ENABLE_OUTPUTS;
 }
 
 void setRegisters(char word) {
-
 	for (int i = 0; i < 8; i++) {
-		CLR(PORTD, PD5);
+		SHIFTREG_CLK_0;
 		char data = word << i;
 		if (data & 0x80) {
-			SET(PORTD, PD3);
+			SHIFTREG_DATA_1;
 		} else {
-			CLR(PORTD, PD3);
+			SHIFTREG_DATA_0;
 		}
-		SET(PORTD, PD5);
+		SHIFTREG_CLK_1;
 	}
 }
 
 void setTime(char reg1, char reg2, char reg3) {
-	CLR(PORTD, PD4);
+	SHIFTREG_STRB_0;
 	setRegisters(reg3);
 	setRegisters(reg2);
 	setRegisters(reg1);
-	SET(PORTD, PD4);
+	SHIFTREG_STRB_1;
 }

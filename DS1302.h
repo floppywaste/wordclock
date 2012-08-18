@@ -29,6 +29,7 @@
 #define DS1302_H_
 
 #include "macro.h"
+#include <stdbool.h>
 
 /**
  * Convenience register constants.
@@ -57,7 +58,7 @@
 
 #include <stdint.h>
 
-void init();
+void initClock();
 
 
 uint8_t read_register(uint8_t reg);
@@ -79,13 +80,13 @@ void write_register(uint8_t reg, uint8_t value);
 // */
 //void write_protect(bool enable);
 //
-///**
-// * Set or clear clock halt flag.
-// *
-// * Args:
-// *   value: true to set halt flag, false to clear.
-// */
-//void halt(bool value);
+/**
+ * Set or clear clock halt flag.
+ *
+ * Args:
+ *   value: true to set halt flag, false to clear.
+ */
+void halt(bool value);
 
 /**
  * Get individual pieces of the time and date.
@@ -110,6 +111,9 @@ void date(uint8_t date);
 void month(uint8_t mon);
 void day(uint8_t day);
 void year(uint16_t yr);
+
+void addMinutes(uint8_t minutes);
+void addHours(uint8_t hours);
 
 void _write_out(uint8_t value);
 

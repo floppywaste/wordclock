@@ -52,7 +52,7 @@ all: wordclock_arduino.elf secondary-outputs
 wordclock_arduino.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: AVR C Linker'
-	avr-gcc -Wl,-Map,wordclock_arduino.map -mmcu=atmega328p -o "wordclock_arduino.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	avr-gcc -Wl,-Map,wordclock_arduino.map -mmcu=atmega168 -o "wordclock_arduino.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -76,13 +76,13 @@ wordclock_arduino.eep: wordclock_arduino.elf
 
 sizedummy: wordclock_arduino.elf
 	@echo 'Invoking: Print Size'
-	-avr-size --format=avr --mcu=atmega328p wordclock_arduino.elf
+	-avr-size --format=avr --mcu=atmega168 wordclock_arduino.elf
 	@echo 'Finished building: $@'
 	@echo ' '
 
 avrdudedummy: wordclock_arduino.elf
 	@echo 'Invoking: AVRDude'
-	/usr/bin/avrdude -pm328p -carduino -P/dev/ttyACM0 -V -Uflash:w:wordclock_arduino.hex:a
+	/usr/bin/avrdude -pm168 -cstk500v2 -P/dev/ttyUSB0 -V -Uflash:w:wordclock_arduino.hex:a
 	@echo 'Finished building: $@'
 	@echo ' '
 
