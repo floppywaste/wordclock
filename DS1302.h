@@ -25,6 +25,14 @@
  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  SUCH DAMAGE.
  */
+
+/*
+ * This code has been modified, extended, and refactored in numerous ways.
+ * The original version was a c++ implementation of the DS1302 protocol designed for the arduino platform.
+ *
+ * Thanks to Matt Sparks!
+ */
+
 #ifndef DS1302_H_
 #define DS1302_H_
 
@@ -55,11 +63,9 @@
 #define DS1302_CLK_DIR_OUT SET(DDRB, DDB1)
 #define DS1302_RST_DIR_OUT SET(DDRB, DDB0)
 
-
 #include <stdint.h>
 
 void initClock();
-
 
 uint8_t read_register(uint8_t reg);
 
