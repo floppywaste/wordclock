@@ -8,10 +8,10 @@
 #define DEBOUNCE_TIME 20        /* time to wait while "de-bouncing" button */
 #define LOCK_INPUT_TIME 150    /* time to wait after a button press */
 
-int button_is_pressed(uint8_t btn);
+int buttonIsPressed(uint8_t btn);
 
 void enableButtons();
 void enableButtonInterrupts();
 
-void delay_ms(uint16_t ms);
+void delayMs(uint16_t ms);
 

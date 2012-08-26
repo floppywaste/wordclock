@@ -19,7 +19,6 @@
 
 void loop();
 void setUp();
-void initDebug();
 void checkAllOutputs();
 void displayCurrentTime();
 
@@ -46,18 +45,18 @@ void setUp() {
 }
 
 void loop() {
-	if (button_is_pressed(HOUR_BTN)) {
+	if (buttonIsPressed(HOUR_BTN)) {
 		incHour();
-	} else if (button_is_pressed(MINUTE_BTN)) {
+	} else if (buttonIsPressed(MINUTE_BTN)) {
 		incMinute();
 	}
 	displayCurrentTime();
-	delay_ms(LOCK_INPUT_TIME);
+	delayMs(LOCK_INPUT_TIME);
 }
 
 void setAndWait(uint32_t word) {
 	setRegister(word);
-	delay_ms(CHECK_DELAY);
+	delayMs(CHECK_DELAY);
 }
 
 void checkAllOutputs() {

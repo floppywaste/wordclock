@@ -30,9 +30,9 @@ void enableButtonInterrupts() {
 /*
  * Returns 1 if the specified button was pressed, 0 otherwise.
  */
-int button_is_pressed(uint8_t btn) {
+int buttonIsPressed(uint8_t btn) {
 	if (bit_is_clear(BUTTON_PIN, btn)) {
-		delay_ms(DEBOUNCE_TIME);
+		delayMs(DEBOUNCE_TIME);
 		if (bit_is_clear(BUTTON_PIN, btn))
 			return 1;
 	}
@@ -40,7 +40,7 @@ int button_is_pressed(uint8_t btn) {
 	return 0;
 }
 
-void delay_ms(uint16_t ms) {
+void delayMs(uint16_t ms) {
 	while (ms) {
 		_delay_ms(1);
 		ms--;
