@@ -11,7 +11,6 @@
 
 #include "display.h"
 #include "DS1302.h"
-#include "uart.h"
 #include "macro.h"
 #include "buttons.h"
 
@@ -112,11 +111,5 @@ void displayCurrentTime() {
 	int minIdx = (int) (min / 5);
 	registers |= MINUTE_STEPS[minIdx];
 	setRegister(registers);
-}
-
-void initDebug() {
-	uart_init();
-	stdout= &uart_output;
-	stdin= &uart_input;
 }
 
