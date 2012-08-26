@@ -15,6 +15,7 @@
 #include "macro.h"
 #include "buttons.h"
 
+
 #define CHECK_DELAY 100
 
 void loop();
@@ -23,20 +24,65 @@ void initDebug();
 void checkAllOutputs();
 void displayCurrentTime();
 
-ISR (PCINT2_vect) {
-	cli();
+const uint32_t HOUR_STEPS[] = { D_ONE, D_TWO, D_THRE, D_FOUR, D_HFVE, D_SIX, D_SEVN, D_EGHT, D_NINE, D_HTEN, D_ELVN,
+		D_TWLV };
+
+const uint32_t MINUTE_STEPS[] = { D_OCLK, (D_MFVE | D_PAST), (D_MTEN | D_PAST), (D_QUAR | D_PAST), (D_TWTY | D_PAST),
+		(D_MFVE | D_TO | D_HALF), (D_HALF), (D_MFVE | D_PAST | D_HALF), (D_TWTY | D_TO), (D_QUAR | D_TO),
+		(D_MTEN | D_TO), (D_MFVE | D_TO) };
+
+int main(void) {
+	setUp();
+	halt(false);
+	while (1) {
+		loop();
+	}
+}
+
+void setUp() {
+	initOutput();
+	initClock();
+	checkAllOutputs();
+	enableButtons();
+}
+
+void loop() {
 	if (button_is_pressed(HOUR_BTN)) {
 		incHour();
-//		addHours(1);
-//		displayCurrentTime();
-		delay_ms(LOCK_INPUT_TIME);
 	} else if (button_is_pressed(MINUTE_BTN)) {
 		incMinute();
-//		addMinutes(1);
-//		displayCurrentTime();
-		delay_ms(LOCK_INPUT_TIME);
 	}
-	sei();
+	displayCurrentTime();
+	delay_ms(LOCK_INPUT_TIME);
+}
+
+void setAndWait(uint32_t word) {
+	setRegister(word);
+	delay_ms(CHECK_DELAY);
+}
+
+void checkAllOutputs() {
+	setAndWait(D_ITIS);
+	setAndWait(D_MFVE);
+	setAndWait(D_MTEN);
+	setAndWait(D_QUAR);
+	setAndWait(D_TWTY);
+	setAndWait(D_TO);
+	setAndWait(D_PAST);
+	setAndWait(D_HALF);
+	setAndWait(D_ELVN);
+	setAndWait(D_TWO);
+	setAndWait(D_HTEN);
+	setAndWait(D_ONE);
+	setAndWait(D_TWLV);
+	setAndWait(D_THRE);
+	setAndWait(D_FOUR);
+	setAndWait(D_SIX);
+	setAndWait(D_EGHT);
+	setAndWait(D_SEVN);
+	setAndWait(D_NINE);
+	setAndWait(D_HFVE);
+	setAndWait(D_OCLK);
 }
 
 uint8_t correctHour(uint8_t min, uint8_t hour) {
@@ -59,162 +105,13 @@ int between(uint8_t min, uint8_t loBound, uint8_t hiBound) {
 }
 
 void displayCurrentTime() {
-	uint8_t reg1 = 0;
-	uint8_t reg2 = 0;
-	uint8_t reg3 = D3_ITIS;
-
+	uint32_t registers = D_ITIS;
 	uint8_t min = getMinutes();
 	uint8_t hour = correctHour(min, getHour());
-
-	switch (hour) {
-	case 1:
-		reg2 |= D2_ONE;
-		break;
-	case 2:
-		reg2 |= D2_TWO;
-		break;
-	case 3:
-		reg2 |= D2_THRE;
-		break;
-	case 4:
-		reg2 |= D2_FOUR;
-		break;
-	case 5:
-		reg1 |= D1_HFVE;
-		break;
-	case 6:
-		reg1 |= D1_SIX;
-		break;
-	case 7:
-		reg1 |= D1_SEVN;
-		break;
-	case 8:
-		reg1 |= D1_EGHT;
-		break;
-	case 9:
-		reg1 |= D1_NINE;
-		break;
-	case 10:
-		reg1 |= D1_HTEN;
-		break;
-	case 11:
-		reg1 |= D1_ELVN;
-		break;
-	case 12:
-		reg2 |= D2_TWLV;
-		break;
-	}
-
-	if (between(min, 0, 5)) {
-		reg1 |= D1_OCLK;
-	} else if (between(min, 5, 10)) {
-		reg3 |= D3_MFVE;
-		reg2 |= D2_PAST;
-	} else if (between(min, 10, 15)) {
-		reg3 |= D3_MTEN;
-		reg2 |= D2_PAST;
-	} else if (between(min, 15, 20)) {
-		reg2 |= D2_QUAR | D2_PAST;
-	} else if (between(min, 20, 25)) {
-		reg3 |= D3_TWTY;
-		reg2 |= D2_PAST;
-	} else if (between(min, 25, 30)) {
-		reg3 |= D3_MFVE | D3_HALF;
-		reg2 |= D2_TO;
-	} else if (between(min, 30, 35)) {
-		reg3 |= D3_HALF;
-	} else if (between(min, 35, 40)) {
-		reg3 |= D3_MFVE | D3_HALF;
-		reg2 |= D2_PAST;
-	} else if (between(min, 40, 45)) {
-		reg3 |= D3_TWTY;
-		reg2 |= D2_TO;
-	} else if (between(min, 45, 50)) {
-		reg2 |= D2_QUAR | D2_TO;
-	} else if (between(min, 50, 55)) {
-		reg3 |= D3_MTEN;
-		reg2 |= D2_TO;
-	} else if (between(min, 55, 60)) {
-		reg3 |= D3_MFVE;
-		reg2 |= D2_TO;
-	}
-
-	setTime(reg1, reg2, reg3);
-}
-
-void setUp() {
-	initOutput();
-//	initDebug();
-	initClock();
-	checkAllOutputs();
-	enableButtons();
-//	initTimeInput();
-}
-
-void loop() {
-	if (button_is_pressed(HOUR_BTN)) {
-		incHour();
-	} else if (button_is_pressed(MINUTE_BTN)) {
-		incMinute();
-	}
-	displayCurrentTime();
-	delay_ms(LOCK_INPUT_TIME);
-}
-
-int main(void) {
-	setUp();
-	halt(false);
-	hour(17);
-	minutes(58);
-	seconds(20);
-	while (1) {
-		loop();
-	}
-}
-
-void checkAllOutputs() {
-	setTime(0, 0, D3_ITIS);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, 0, D3_MFVE);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, 0, D3_MTEN);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, D2_QUAR, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, 0, D3_TWTY);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, D2_TO, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, D2_PAST, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, 0, D3_HALF);
-	_delay_ms(CHECK_DELAY);
-	setTime(D1_ELVN, 0, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, D2_TWO, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(D1_HTEN, 0, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, D2_ONE, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, D2_TWLV, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, D2_THRE, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(0, D2_FOUR, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(D1_SIX, 0, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(D1_EGHT, 0, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(D1_SEVN, 0, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(D1_NINE, 0, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(D1_HFVE, 0, 0);
-	_delay_ms(CHECK_DELAY);
-	setTime(D1_OCLK, 0, 0);
-	_delay_ms(CHECK_DELAY);
+	registers |= HOUR_STEPS[hour - 1];
+	int minIdx = (int) (min / 5);
+	registers |= MINUTE_STEPS[minIdx];
+	setRegister(registers);
 }
 
 void initDebug() {

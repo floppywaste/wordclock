@@ -5,8 +5,8 @@
 #define HOUR_BTN PD6          /* bit for button input/output */
 #define MINUTE_BTN PD7          /* bit for button input/output */
 
-#define DEBOUNCE_TIME 25        /* time to wait while "de-bouncing" button */
-#define LOCK_INPUT_TIME 250    /* time to wait after a button press */
+#define DEBOUNCE_TIME 20        /* time to wait while "de-bouncing" button */
+#define LOCK_INPUT_TIME 150    /* time to wait after a button press */
 
 int button_is_pressed(uint8_t btn);
 
