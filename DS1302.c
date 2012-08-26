@@ -99,12 +99,11 @@ void write_register(uint8_t reg, uint8_t value) {
 	DS1302_RST_0
 }
 
-void halt(bool enable)
-{
-  uint8_t sec = read_register(SEC_REG);
-  sec &= ~(1 << 7);
-  sec |= (enable << 7);
-  write_register(SEC_REG, sec);
+void halt(bool enable) {
+	uint8_t sec = read_register(SEC_REG);
+	sec &= ~(1 << 7);
+	sec |= (enable << 7);
+	write_register(SEC_REG, sec);
 }
 
 /*** Get time ***/
@@ -189,4 +188,14 @@ void addHours(uint8_t hours) {
 	if (newHours > 23)
 		newHours -= 24;
 	hour(newHours);
+}
+
+void incHour() {
+	hour((getHour() + 1) % 24);
+	_delay_ms(10);
+}
+
+void incMinute() {
+	minutes((getMinutes() + 1) % 60);
+	_delay_ms(10);
 }

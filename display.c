@@ -19,6 +19,19 @@ void setRegisters(char word) {
 	}
 }
 
+void setR(uint32_t word) {
+	for (int i = 0; i < 24; i++) {
+		SHIFTREG_CLK_0;
+		uint32_t data = word << i;
+		if (data & 0x800000) {
+			SHIFTREG_DATA_1;
+		} else {
+			SHIFTREG_DATA_0;
+		}
+		SHIFTREG_CLK_1;
+	}
+}
+
 void setTime(char reg1, char reg2, char reg3) {
 	SHIFTREG_STRB_0;
 	setRegisters(reg3);

@@ -115,6 +115,9 @@ void year(uint16_t yr);
 void addMinutes(uint8_t minutes);
 void addHours(uint8_t hours);
 
+void incHour();
+void incMinute();
+
 void _write_out(uint8_t value);
 
 /**
