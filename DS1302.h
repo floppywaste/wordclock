@@ -78,6 +78,7 @@ uint8_t read_register(uint8_t reg);
  */
 void write_register(uint8_t reg, uint8_t value);
 
+// Not needed
 ///**
 // * Enable or disable write protection on chip.
 // *
@@ -86,6 +87,7 @@ void write_register(uint8_t reg, uint8_t value);
 // */
 //void write_protect(bool enable);
 //
+
 /**
  * Set or clear clock halt flag.
  *

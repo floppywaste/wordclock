@@ -2,7 +2,7 @@
 #define DISPLAY_H
 
 /*
- * shift register pins
+ * shift register bit masks for output leds
  */
 #define D_HFVE ((uint32_t)1)<<8
 #define D_SEVN ((uint32_t)1)<<9
@@ -50,7 +50,7 @@
 void initOutput();
 
 /*
- * sets the bitmasks of the shift registers
+ * sets the bit masks of the shift registers
  */
 void setRegister(uint32_t word);
 
