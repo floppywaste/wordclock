@@ -16,18 +16,6 @@ void enableButtons() {
 }
 
 /*
- * enable hour and minute buttons for external interrupt
- */
-void enableButtonInterrupts() {
-
-	PCICR |= (1 << PCIE2);
-	PCMSK2 |= (1 << PCINT22);
-	PCMSK2 |= (1 << PCINT23);
-
-	sei();
-}
-
-/*
  * Returns 1 if the specified button was pressed, 0 otherwise.
  */
 int buttonIsPressed(uint8_t btn) {

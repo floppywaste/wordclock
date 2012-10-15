@@ -30,13 +30,13 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 LSS += \
-wordclock_arduino.lss \
+wordclock_atmega.lss \
 
 FLASH_IMAGE += \
-wordclock_arduino.hex \
+wordclock_atmega.hex \
 
 EEPROM_IMAGE += \
-wordclock_arduino.eep \
+wordclock_atmega.eep \
 
 SIZEDUMMY += \
 sizedummy \
@@ -46,49 +46,49 @@ avrdudedummy \
 
 
 # All Target
-all: wordclock_arduino.elf secondary-outputs
+all: wordclock_atmega.elf secondary-outputs
 
 # Tool invocations
-wordclock_arduino.elf: $(OBJS) $(USER_OBJS)
+wordclock_atmega.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: AVR C Linker'
-	avr-gcc -Wl,-Map,wordclock_arduino.map -mmcu=atmega168 -o "wordclock_arduino.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	avr-gcc -Wl,-Map,wordclock_atmega.map -mmcu=atmega168 -o "wordclock_atmega.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-wordclock_arduino.lss: wordclock_arduino.elf
+wordclock_atmega.lss: wordclock_atmega.elf
 	@echo 'Invoking: AVR Create Extended Listing'
-	-avr-objdump -h -S wordclock_arduino.elf  >"wordclock_arduino.lss"
+	-avr-objdump -h -S wordclock_atmega.elf  >"wordclock_atmega.lss"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-wordclock_arduino.hex: wordclock_arduino.elf
+wordclock_atmega.hex: wordclock_atmega.elf
 	@echo 'Create Flash image (ihex format)'
-	-avr-objcopy -R .eeprom -O ihex wordclock_arduino.elf  "wordclock_arduino.hex"
+	-avr-objcopy -R .eeprom -O ihex wordclock_atmega.elf  "wordclock_atmega.hex"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-wordclock_arduino.eep: wordclock_arduino.elf
+wordclock_atmega.eep: wordclock_atmega.elf
 	@echo 'Create eeprom image (ihex format)'
-	-avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex wordclock_arduino.elf  "wordclock_arduino.eep"
+	-avr-objcopy -j .eeprom --no-change-warnings --change-section-lma .eeprom=0 -O ihex wordclock_atmega.elf  "wordclock_atmega.eep"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-sizedummy: wordclock_arduino.elf
+sizedummy: wordclock_atmega.elf
 	@echo 'Invoking: Print Size'
-	-avr-size --format=avr --mcu=atmega168 wordclock_arduino.elf
+	-avr-size --format=avr --mcu=atmega168 wordclock_atmega.elf
 	@echo 'Finished building: $@'
 	@echo ' '
 
-avrdudedummy: wordclock_arduino.elf
+avrdudedummy: wordclock_atmega.elf
 	@echo 'Invoking: AVRDude'
-	/usr/bin/avrdude -pm168 -cstk500v2 -P/dev/ttyUSB0 -V -Uflash:w:wordclock_arduino.hex:a
+	/usr/bin/avrdude -pm168 -cstk500v2 -P/dev/ttyUSB0 -V -Uflash:w:wordclock_atmega.hex:a
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C_DEPS)$(ASM_DEPS)$(EEPROM_IMAGE)$(FLASH_IMAGE)$(ELFS)$(LSS)$(AVRDUDEDUMMY)$(S_DEPS)$(SIZEDUMMY)$(S_UPPER_DEPS) wordclock_arduino.elf
+	-$(RM) $(OBJS)$(C_DEPS)$(ASM_DEPS)$(EEPROM_IMAGE)$(FLASH_IMAGE)$(ELFS)$(LSS)$(AVRDUDEDUMMY)$(S_DEPS)$(SIZEDUMMY)$(S_UPPER_DEPS) wordclock_atmega.elf
 	-@echo ' '
 
 secondary-outputs: $(LSS) $(FLASH_IMAGE) $(EEPROM_IMAGE) $(SIZEDUMMY) $(AVRDUDEDUMMY)

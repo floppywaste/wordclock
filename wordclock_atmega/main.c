@@ -17,7 +17,7 @@
 /*
  * delay in ms between triggering each led output in check sequence
  */
-#define CHECK_DELAY 100
+#define CHECK_DELAY 300
 
 /*
  * the main loop
@@ -116,7 +116,7 @@ uint8_t correctHour(uint8_t min, uint8_t hour) {
 		correctedHour = (hour + 1) % 24;
 	}
 	if (correctedHour == 0) {
-		hour = 12;
+		correctedHour = 12;
 	} else if (correctedHour > 12) {
 		correctedHour -= 12;
 	}
