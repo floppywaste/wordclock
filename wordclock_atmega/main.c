@@ -106,15 +106,7 @@ void checkAllOutputs() {
 	setAndWait(D_OCLK);
 }
 
-/*
- * Shifts the actual hour of day to the hour displayed in the clock phrase.
- */
-uint8_t correctHour(uint8_t min, uint8_t hour) {
-	uint8_t correctedHour = hour;
-	bool nextHour = (min >= 25);
-	if (nextHour) {
-		correctedHour = (hour + 1) % 24;
-	}
+uint8_t convert24toAmPm(uint8_t correctedHour) {
 	if (correctedHour == 0) {
 		correctedHour = 12;
 	} else if (correctedHour > 12) {
@@ -122,6 +114,18 @@ uint8_t correctHour(uint8_t min, uint8_t hour) {
 	}
 
 	return correctedHour;
+}
+
+/*
+ * Shifts the actual hour of day to the hour displayed in the clock phrase.
+ */
+uint8_t correctHalfHourShift(uint8_t min, uint8_t hour) {
+	bool halfHourShift = (min >= 25);
+	if (halfHourShift) {
+		return (hour + 1) % 24;
+	} else {
+		return hour;
+	}
 }
 
 
@@ -137,7 +141,11 @@ uint32_t currentTimeBitMask() {
 	//it is always 'it is'
 	uint32_t registers = D_ITIS;
 	uint8_t min = getMinutes();
-	uint8_t hour = correctHour(min, getHour());
+
+	/*
+	 * TODO: get am/pm mode working and rid of the stupid conversion
+	 */
+	uint8_t hour = convert24toAmPm(correctHalfHourShift(min, getHour()));
 	registers |= HOUR_STEPS[hour - 1];
 	int minIdx = (int) (min / 5);
 	registers |= MINUTE_STEPS[minIdx];
